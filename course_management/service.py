@@ -36,17 +36,27 @@ class CourseManagementService:
     def assign_mentor(self, course_id, mentor_id):
         self._get(self.courses, course_id, "Course").assign_mentor(self._get(self.mentors, mentor_id, "Mentor"))
 
-    def enroll_student(self, student_id, course_id):
+    def _validate_enrollment(self, student_id, course_id):
+        """Validate enrollment rules and return the resolved objects and ID."""
         student = self._get(self.students, student_id, "Student")
         course = self._get(self.courses, course_id, "Course")
+
         if student_id in course.enrolled_student_ids:
             raise EnrollmentError("Student is already enrolled")
+
         if course.seats_available <= 0:
             raise EnrollmentError("Course is full")
-        eid = f"ENR-{student_id}-{course_id}"
-        self._unique(eid, self.enrollments, "Enrollment")
-        enrollment = Enrollment.create(student, course, eid)
-        self.enrollments[eid] = enrollment
+
+        enrollment_id = f"ENR-{student_id}-{course_id}"
+        self._unique(enrollment_id, self.enrollments, "Enrollment")
+
+        return student, course, enrollment_id
+
+    def enroll_student(self, student_id, course_id):
+        """Enroll a student after all business rules have passed."""
+        student, course, enrollment_id = self._validate_enrollment(student_id, course_id)
+        enrollment = Enrollment.create(student, course, enrollment_id)
+        self.enrollments[enrollment_id] = enrollment
         return enrollment
 
     def complete_enrollment(self, enrollment_id):

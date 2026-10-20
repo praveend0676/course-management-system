@@ -27,8 +27,11 @@ class CourseSystemTests(unittest.TestCase):
     def test_enrollment_capacity_and_duplicate(self):
         self.service.add_student(Student("S1", "Asha", "a@example.com"))
         self.service.add_student(Student("S2", "Bala", "b@example.com"))
+        self.service.add_student(Student("S3", "Chey", "c@example.com"))
         self.service.add_course(Course("C1", "Python", "OOP course", capacity=1))
+        self.service.add_course(Course("C2", "Jave", "FT course", capacity=1))
         self.service.enroll_student("S1", "C1")
+        self.service.enroll_student("S3", "C2")
         with self.assertRaises(EnrollmentError): self.service.enroll_student("S1", "C1")
         with self.assertRaises(EnrollmentError): self.service.enroll_student("S2", "C1")
     
