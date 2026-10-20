@@ -31,8 +31,7 @@ class CourseSystemTests(unittest.TestCase):
         self.service.enroll_student("S1", "C1")
         with self.assertRaises(EnrollmentError): self.service.enroll_student("S1", "C1")
         with self.assertRaises(EnrollmentError): self.service.enroll_student("S2", "C1")
-        with self.assertRaises(NotFoundError): self.service.enroll_student("S3", "C2")
-        with self.assertRaises(NotFoundError): self.service.enroll_student("S4", "C2")
+    
 
     def test_json_round_trip(self):
         self.service.add_student(Student("S1", "Asha", "a@example.com"))

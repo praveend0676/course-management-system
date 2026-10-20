@@ -36,7 +36,7 @@ class CourseManagementService:
     def assign_mentor(self, course_id, mentor_id):
         self._get(self.courses, course_id, "Course").assign_mentor(self._get(self.mentors, mentor_id, "Mentor"))
 
-    def _validate_enrollment(self, student_id, course_id):
+    def enroll_student(self, student_id, course_id):
         student = self._get(self.students, student_id, "Student")
         course = self._get(self.courses, course_id, "Course")
         if student_id in course.enrolled_student_ids:
@@ -45,10 +45,6 @@ class CourseManagementService:
             raise EnrollmentError("Course is full")
         eid = f"ENR-{student_id}-{course_id}"
         self._unique(eid, self.enrollments, "Enrollment")
-        return student, course, eid
-
-    def enroll_student(self, student_id, course_id):
-        student, course, eid = self._validate_enrollment(student_id, course_id)
         enrollment = Enrollment.create(student, course, eid)
         self.enrollments[eid] = enrollment
         return enrollment
